@@ -1,6 +1,9 @@
+#folders
+.settings/
+bin/
+site/
+
+# files
 .classpath
 .project
-.settings
-bin/
-index.html
-style.css
+
