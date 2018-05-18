@@ -1,15 +1,19 @@
 # HttpWebServer
 
-
-<bold>Note: </bold> When using trying to access your server from a different computer,
-make sure that your firewall will allow such connection on whatever port your are using.
-
+Pretty cool HTTP server. Currently with only basic capabilities.
 
 ## Goal
 The goal of the this project was to help me learn about HTTP and networking.
 
 ## Next
-I am working on adding functionality to have a server managing GUI as well
-the ability to respond to more of the HTTP Request Methods.
+Features I wish to add:
+- Logging
+- Server GUI
+- Handling more HTTP Request Methods
+- SSL or something else? 
 
-I plan on implementing more features in the future. 
+
+
+**Note:** When using trying to access your server from a different computer,
+make sure that your firewall will allow such connection on whatever port your are using.
+
