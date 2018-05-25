@@ -11,6 +11,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import jcg.java.server.ClientWorker;
+import jcg.java.server.ServerProperties;
+import jcg.java.server.util.logging.Log;
 
 public class ThreadedServerTest {
 
@@ -19,7 +21,6 @@ public class ThreadedServerTest {
 	// If the server is alive it will continue to accept new socket connections
 	private boolean alive = true;
 	
-	// Server Properties
 	private final String SITE_PATH; // The path to the folder which holds the site. No other files should be accessed by the user(s)
 	private final int PORT_NUMBER;
 	private final int BACK_LOG;
@@ -38,20 +39,22 @@ public class ThreadedServerTest {
 	}
 		
 	public ThreadedServerTest() throws IOException {
-		PORT_NUMBER = 2000;
-		SITE_PATH = "site/";
-		BACK_LOG = 100;
+		Log log = new Log();
+		log.start();
+		// TODO: remove these, replace all calls to get these vars to use ServerProperties
+		PORT_NUMBER = Integer.parseInt(ServerProperties.getProperty("PORT_NUMBER"));
+		SITE_PATH = ServerProperties.getProperty("SITE_PATH");
+		BACK_LOG = Integer.parseInt(ServerProperties.getProperty("BACK_LOG"));
 		//MAX_CLIENTS = 0;
 		//MAX_THREADS = 0;
 			
 		File sitePath = new File(SITE_PATH);
-		System.out.println("Site files located at: " + sitePath.getAbsolutePath());
+		Log.log("Site files located at: " + sitePath.getAbsolutePath());
 		
-		System.out.println("Creating window.");
+		Log.log("Creating window");
 		createWindow();
 		workers = new ArrayList<ClientWorker>();
-		//System.out.println("\t\t\t\t\t\t\t::\tStarting HttpServer\t::\t\n");
-		System.out.println("Starting server.");
+		Log.log("Starting server @ Port: " +  PORT_NUMBER);
 		server = new ServerSocket(PORT_NUMBER, BACK_LOG);
 		// TODO: Instantiating new threads is too costly must change!
 		while(isServerAlive()) {
@@ -59,7 +62,7 @@ public class ThreadedServerTest {
 			w.start();
 			workers.add(w);
 		}
-		System.out.println("Shutting Down.");
+		Log.log("Server is no longer alive");
 		for(ClientWorker w : workers) {
 			w.closeSocket();
 			w.stop();
@@ -75,7 +78,7 @@ public class ThreadedServerTest {
 			@Override
 		public void actionPerformed(ActionEvent e) {
 				alive = false;
-				System.out.println("SHUTTING DOWN THE SERVER");
+				Log.log("[GUI SHUTDOWN] Shutting down server");
 				//frame.dispose();
 				System.exit(0);
 			}
