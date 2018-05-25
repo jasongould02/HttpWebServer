@@ -6,4 +6,6 @@ site/
 # files
 .classpath
 .project
+debug.txt
+
 
