@@ -1,6 +1,6 @@
 # HttpWebServer
 
-Pretty cool HTTP server. Currently with only basic capabilities.
+Pretty cool multithreaded HTTP server. Currently with only basic capabilities.
 
 ## Goal
 The goal of the this project was to help me learn about HTTP and networking.
