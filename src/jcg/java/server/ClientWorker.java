@@ -7,7 +7,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import jcg.java.server.test.ThreadedServerTest;
 import jcg.java.server.util.FileUtil;
+import jcg.java.server.util.logging.Log;
 
 public class ClientWorker implements Runnable {
 
@@ -38,8 +40,10 @@ public class ClientWorker implements Runnable {
 			 * it will end the entire connection.
 			*/ 
 			while((input = i.readLine()) != null) { // After reading the first line, read the rest of the input
+				Log.log("REQUEST:" + input);
 				//System.out.println("INPUT:: "+ input);
 				if(input.startsWith("GET")) {
+					Log.log("GET request from " + remoteIP);
 					String sep[] = input.split(" ");
 					if(sep[0].equals("GET") && sep[2].equals("HTTP/1.1")) { // Only respond to HTTP/1.1 
 						response(o, input);
@@ -83,6 +87,18 @@ public class ClientWorker implements Runnable {
 		String[] sep = line.split(" ");
 		File file;
 		
+		//if(file.getParentFile() == null || file.getParentFile().getName() != ServerProperties.getProperty("SITE_PATH")) {
+		if(!sep[1].trim().startsWith("/" + ServerProperties.getProperty("SITE_PATH"))) {
+			Log.log("Invalid parent file (Requested file not located in specified SITE_PATH)");
+			out.write("HTTP/1.1 403 Forbidden" + "\r\n");
+			out.write("Connection: close" + "\r\n");
+			//out.write("Content-Length: " + 0 + "\r\n");
+			out.write("\r\n");
+			out.flush();
+			return;
+		}
+		
+		
 		// This is because HTTP send requests as: *RequestType* /*File* *HTTPVer*
 		if(sep[1].startsWith("/")) {
 			sep[1] = sep[1].replaceFirst("/", " ").trim();
@@ -95,9 +111,12 @@ public class ClientWorker implements Runnable {
 			file = new File(sep[1]);
 		}
 		
+		/*Log.log("Getting FILE: " + file.getName());
+		Log.log("Getting FILEPARENT: " + file.getParentFile().getName());*/
+		
 		
 		String fileExtension = FileUtil.getFileExtension(file);
-		//System.out.println("Sending file: " + file.getName() + " With Extension: " + fileExtension);
+		//System.out.println("Sending file: " + file.getName() + " With Extension: " + fileExtension); //TODO: Replace with log statement
 		
 		if(!file.exists() || FileUtil.getFileExtension(file) == null) {
 			// TODO HTTP 404 File Not Found
@@ -121,7 +140,7 @@ public class ClientWorker implements Runnable {
 	
 	
 	public synchronized void start() {
-		System.out.println("Creating to ClientWorker/Thread, connected to: " + remoteIP + ".");
+		Log.log("Creating to ClientWorker/Thread, connected to: " + remoteIP + ".");
 		running = true;
 		thread = new Thread(this, "Client Worker/" + remoteIP);
 		thread.setPriority(Thread.NORM_PRIORITY);
@@ -129,7 +148,8 @@ public class ClientWorker implements Runnable {
 	}
 
 	public synchronized void stop() {
-		System.out.println("Stopping ClientWorker/Thread, connected to: " + remoteIP + ".");
+		Log.log("Stopping ClientWorker/Thread, connected to: " + remoteIP + ".");
+
 		running = false;
 		try {
 			thread.join();
