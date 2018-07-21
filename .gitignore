@@ -3,6 +3,8 @@
 bin/
 site/
 
+libs/ThreadPool
+
 # files
 .classpath
 .project

@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import jcg.java.server.ClientWorker;
 import jcg.java.server.ServerProperties;
 import jcg.java.server.util.logging.Log;
+import jcg.pool.core.ThreadPool;
 
 public class ThreadedServerTest {
 
@@ -79,6 +80,12 @@ public class ThreadedServerTest {
 		public void actionPerformed(ActionEvent e) {
 				alive = false;
 				Log.log("[GUI SHUTDOWN] Shutting down server");
+				
+				try {
+					server.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 				//frame.dispose();
 				System.exit(0);
 			}

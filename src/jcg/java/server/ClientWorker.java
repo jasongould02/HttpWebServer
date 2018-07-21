@@ -7,12 +7,20 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import jcg.java.server.test.ThreadedServerTest;
 import jcg.java.server.util.FileUtil;
 import jcg.java.server.util.logging.Log;
 
 public class ClientWorker implements Runnable {
 
+	// TODO: Change Worker to 'block' setup
+	
+	/*
+	 * 
+	 * Use InputStream#available() to check if there are bytes in the input stream
+	 * This can be used to check if a connection in the block has requests etc
+	 * 
+	 * */
+	
 	private Thread thread;
 	private String remoteIP;
 	private boolean running = false;
@@ -87,6 +95,8 @@ public class ClientWorker implements Runnable {
 		String[] sep = line.split(" ");
 		File file;
 		
+		file = getFileFromHeader(line);
+		
 		//if(file.getParentFile() == null || file.getParentFile().getName() != ServerProperties.getProperty("SITE_PATH")) {
 		if(!sep[1].trim().startsWith("/" + ServerProperties.getProperty("SITE_PATH"))) {
 			Log.log("Invalid parent file (Requested file not located in specified SITE_PATH)");
@@ -98,8 +108,59 @@ public class ClientWorker implements Runnable {
 			return;
 		}
 		
+		/*Log.log("Getting FILE: " + file.getName());
+		Log.log("Getting FILEPARENT: " + file.getParentFile().getName());*/
 		
-		// This is because HTTP send requests as: *RequestType* /*File* *HTTPVer*
+		String fileExtension = FileUtil.getFileExtension(file);
+		//System.out.println("Sending file: " + file.getName() + " With Extension: " + fileExtension); //TODO: Replace with log statement
+		
+		if(!file.exists() || FileUtil.getFileExtension(file) == null) {
+			// TODO: HTTP 404 File Not Found
+			out.write("HTTP/1.1 404 OK" + "\r\n");
+			out.write("Connection: close" + "\r\n");
+			//out.write("Content-Length: " + 0 + "\r\n");
+			out.write("\r\n");
+		} else {
+			// TODO: check if file is allowed to be sent/accessed
+			out.write("HTTP/1.1 200 OK" + "\r\n");
+			out.write("Content-Type: text/" + fileExtension + "\r\n");
+			out.write("Connection: keep-alive" + "\r\n");
+			out.write("Content-Length: " + FileUtil.getFileContentLength(file) + "\r\n");
+			out.write("\r\n");
+			
+			out.write(FileUtil.getFileAsString(file, true) + "\r\n");
+			out.write("\r\n");
+			
+			out.flush();
+		}
+	}
+	
+	
+	private void setupResponseHeader(PrintWriter out, String inputLine) {
+		File file = getFileFromHeader(inputLine);
+		boolean allowed = checkPermission(file);
+		
+		if(allowed) {
+			
+		}
+	}
+	
+	
+	/**
+	 * Check the file list to see if the requested file is permitted to be sent 
+	 * 
+	 * @param file to be checked
+	 * @return
+	 */
+	private boolean checkPermission(File file) {
+		return false;
+	}
+	
+	
+	private File getFileFromHeader(String inputLine) {
+		String[] sep = inputLine.split(" ");
+		File file;
+		// This is because HTTP send requests as: *RequestType* /*File* *HTTP Version*
 		if(sep[1].startsWith("/")) {
 			sep[1] = sep[1].replaceFirst("/", " ").trim();
 			if(sep[1].length() <= 0) {
@@ -111,30 +172,10 @@ public class ClientWorker implements Runnable {
 			file = new File(sep[1]);
 		}
 		
-		/*Log.log("Getting FILE: " + file.getName());
-		Log.log("Getting FILEPARENT: " + file.getParentFile().getName());*/
-		
-		
-		String fileExtension = FileUtil.getFileExtension(file);
-		//System.out.println("Sending file: " + file.getName() + " With Extension: " + fileExtension); //TODO: Replace with log statement
-		
-		if(!file.exists() || FileUtil.getFileExtension(file) == null) {
-			// TODO HTTP 404 File Not Found
-			out.write("HTTP/1.1 404 OK" + "\r\n");
-			out.write("Connection: close" + "\r\n");
-			//out.write("Content-Length: " + 0 + "\r\n");
-			out.write("\r\n");
+		if(file.exists()) {
+			return file;
 		} else {
-			// TODO check if file is allowed to be sent/accessed
-			out.write("HTTP/1.1 200 OK" + "\r\n");
-			out.write("Content-Type: text/" + fileExtension + "\r\n");
-			out.write("Connection: keep-alive" + "\r\n");
-			out.write("Content-Length: " + FileUtil.getFileContentLength(file) + "\r\n");
-			out.write("\r\n");
-			out.write(FileUtil.getFileAsString(file, true) + "\r\n");
-			out.write("\r\n");
-
-			out.flush();
+			return null;
 		}
 	}
 	
