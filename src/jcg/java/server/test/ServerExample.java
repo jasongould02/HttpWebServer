@@ -11,11 +11,13 @@ import jcg.java.server.window.Window;
 public class ServerExample {
 
 	Window window;
+	@SuppressWarnings("unused")
 	private ServerSocket serverSocket;
 	ArrayList<ClientWorker> workerList;
 	
 	public static void main(String[] args) {
 		try {
+			@SuppressWarnings("unused")
 			ServerExample se = new ServerExample();
 		} catch (IOException e) {
 			e.printStackTrace();

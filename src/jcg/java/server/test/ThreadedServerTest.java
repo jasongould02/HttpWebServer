@@ -13,7 +13,6 @@ import javax.swing.JFrame;
 import jcg.java.server.ClientWorker;
 import jcg.java.server.ServerProperties;
 import jcg.java.server.util.logging.Log;
-import jcg.pool.core.ThreadPool;
 
 public class ThreadedServerTest {
 
@@ -33,6 +32,7 @@ public class ThreadedServerTest {
 	
 	public static void main(String[] args) {
 		try {
+			@SuppressWarnings("unused")
 			ThreadedServerTest t = new ThreadedServerTest();
 		} catch (IOException e) {
 			e.printStackTrace();

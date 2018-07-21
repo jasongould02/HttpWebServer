@@ -2,8 +2,6 @@ package jcg.java.server.http.response;
 
 import java.net.Socket;
 
-import jcg.java.server.http.HTTPProtocol;
-
 public class Response implements Runnable {
 
 	

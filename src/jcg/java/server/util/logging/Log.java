@@ -5,10 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Date;
 
-import javax.xml.crypto.Data;
-
+	
 public class Log implements Runnable {
 
 	private Thread thread;
@@ -57,17 +55,6 @@ public class Log implements Runnable {
 			w.newLine();
 			flushStream();*/
 			w.println(msg);
-			w.flush();
-		}
-	}
-	
-	
-	/**
-	 * Flushes the BufferedWriter
-	 * @throws IOException
-	 */
-	private static synchronized void flushStream() throws IOException {
-		if(w != null) {
 			w.flush();
 		}
 	}

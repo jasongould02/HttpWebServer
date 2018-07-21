@@ -135,15 +135,15 @@ public class ClientWorker implements Runnable {
 		}
 	}
 	
-	
-	private void setupResponseHeader(PrintWriter out, String inputLine) {
+	// TODO: To check if the requested file is allowed to be sent
+	/*private void setupResponseHeader(PrintWriter out, String inputLine) {
 		File file = getFileFromHeader(inputLine);
 		boolean allowed = checkPermission(file);
 		
 		if(allowed) {
 			
 		}
-	}
+	}*/
 	
 	
 	/**

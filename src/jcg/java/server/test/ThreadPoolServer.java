@@ -37,6 +37,7 @@ public class ThreadPoolServer {
 
 	public static void main(String[] args) {
 		try {
+			@SuppressWarnings("unused")
 			ThreadPoolServer t = new ThreadPoolServer();
 		} catch (IOException e) {
 			e.printStackTrace();
